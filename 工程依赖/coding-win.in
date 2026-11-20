@@ -1,0 +1,4 @@
+# Local Windows launcher for the main process and its separate worker.
+-r control-win.in
+copier==9.19.1
+playwright==1.65.2

@@ -1,0 +1,74 @@
+"""Offline JSON records. Collection names are values, and revisions prevent lost writes."""
+
+from contextlib import closing
+import json
+import sqlite3
+from uuid import uuid4
+
+
+COMPONENT_VERSION = "{{ component_version }}"
+
+
+class RevisionConflict(ValueError):
+    """A newer revision already exists, or the record has been removed."""
+
+
+class Records:
+    def __init__(self, path, collection):
+        if not isinstance(collection, str) or not collection.strip():
+            raise ValueError("a collection name is required")
+        self.path = path
+        self.collection = collection
+        with closing(self._connect()) as db, db:
+            db.execute("""CREATE TABLE IF NOT EXISTS lb_records(
+                collection TEXT NOT NULL, id TEXT NOT NULL, revision INTEGER NOT NULL,
+                body TEXT NOT NULL, PRIMARY KEY(collection, id))""")
+
+    def _connect(self):
+        return sqlite3.connect(self.path, timeout=10)
+
+    @staticmethod
+    def _body(value):
+        return json.dumps(value, ensure_ascii=False, sort_keys=True, allow_nan=False)
+
+    @staticmethod
+    def _record(row):
+        return {"id": row[0], "revision": row[1], "value": json.loads(row[2])}
+
+    def create(self, value):
+        key = uuid4().hex
+        body = self._body(value)
+        with closing(self._connect()) as db, db:
+            db.execute("INSERT INTO lb_records VALUES(?,?,1,?)", (self.collection, key, body))
+        return self._record((key, 1, body))
+
+    def get(self, key):
+        with closing(self._connect()) as db:
+            row = db.execute("SELECT id,revision,body FROM lb_records WHERE collection=? AND id=?",
+                             (self.collection, key)).fetchone()
+        return self._record(row) if row else None
+
+    def list(self, limit=100, after=""):
+        if type(limit) is not int or not 1 <= limit <= 500:
+            raise ValueError("page size must be between 1 and 500")
+        with closing(self._connect()) as db:
+            rows = db.execute("SELECT id,revision,body FROM lb_records WHERE collection=? AND id>? "
+                              "ORDER BY id LIMIT ?", (self.collection, after, limit)).fetchall()
+        return [self._record(row) for row in rows]
+
+    def update(self, key, expected_revision, value):
+        body = self._body(value)
+        with closing(self._connect()) as db, db:
+            changed = db.execute("UPDATE lb_records SET body=?,revision=revision+1 WHERE "
+                                 "collection=? AND id=? AND revision=?",
+                                 (body, self.collection, key, expected_revision))
+            if changed.rowcount != 1:
+                raise RevisionConflict(key)
+        return self._record((key, expected_revision + 1, body))
+
+    def delete(self, key, expected_revision):
+        with closing(self._connect()) as db, db:
+            changed = db.execute("DELETE FROM lb_records WHERE collection=? AND id=? AND revision=?",
+                                 (self.collection, key, expected_revision))
+            if changed.rowcount != 1:
+                raise RevisionConflict(key)

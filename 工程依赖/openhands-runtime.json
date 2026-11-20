@@ -1,0 +1,12 @@
+{
+  "filename": "Light-brain-OpenHands-linux-x64.tar.gz",
+  "compressed_sha256": "890425e1a67a6629f1468bf9fb51a0866baa5203748f2aa869a095eaddfbb0e4",
+  "tar_sha256": "a83884abeed20e8a875065eba01bdac2ddbcb229e4d8ac5b24d329f4a81de2cd",
+  "lock_sha256": "f6370e590f12c10c64fe974bdf2a89fad51bb6bb64afc688fba36470bc1a836a",
+  "compressed_bytes": 144291428,
+  "tar_bytes": 521586176,
+  "python": "3.12",
+  "platform": "linux",
+  "architecture": "x86_64",
+  "sdk": "1.62.0"
+}

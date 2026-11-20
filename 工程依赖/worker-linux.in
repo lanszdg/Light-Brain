@@ -1,0 +1,6 @@
+# Trusted launcher, CPython 3.12, Linux x86_64
+openhands-sdk==1.62.0
+openhands-workspace==1.62.0
+openhands-tools==1.62.0
+openhands-agent-server==1.62.0
+httpx==0.28.1

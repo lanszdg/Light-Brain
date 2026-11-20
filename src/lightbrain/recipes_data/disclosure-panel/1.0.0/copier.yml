@@ -1,0 +1,5 @@
+_subdirectory: files
+_templates_suffix: .jinja
+component_version:
+  type: str
+  default: "1.0.0"

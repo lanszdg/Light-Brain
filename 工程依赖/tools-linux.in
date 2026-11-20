@@ -1,0 +1,4 @@
+# Project preparation and independent acceptance images, CPython 3.12, Linux x86_64
+copier==9.19.1
+playwright==1.65.2
+pytest==9.2.0

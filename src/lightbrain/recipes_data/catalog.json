@@ -1,0 +1,16 @@
+[
+  {
+    "id": "disclosure-panel",
+    "version": "1.0.0",
+    "digest": "209b840b60ce12ded9303cfbd51733ec163d923963b511f88e582c7725dc6928",
+    "description": "Native web disclosure control. Reuse components/disclosure.html and components/disclosure.css for optional detail with keyboard interaction, fluid layout, light/dark themes and reduced motion. Fill the title and body from the project.",
+    "provenance": "Light-brain local component. The touch target and transition timing follow prototype-machine/packages/web-ui/versions/0.1.0/src/visual-foundations.css."
+  },
+  {
+    "id": "local-records",
+    "version": "1.0.0",
+    "digest": "964142ea6c53802507d75546e2fe4822c9bf840787a6aa628806da948c0789b1",
+    "description": "Python stdlib local_records.Records(path, collection). Use for offline JSON collection CRUD with stable IDs, paginated reads, revision-checked edits and SQLite persistence. Requires a writable local database path.",
+    "provenance": "Light-brain local component using Python sqlite3 and JSON."
+  }
+]

@@ -1,0 +1,71 @@
+/* Native details/summary provides keyboard operation and the expanded state.
+   The host controls the title and body and may override the theme tokens. */
+.lb-disclosure {
+  --lb-panel-ink: #192e32;
+  --lb-panel-muted: #415e62;
+  --lb-panel-bg: #f6faf8;
+  --lb-panel-border: #bbccc5;
+  --lb-panel-accent: #28655d;
+  --lb-panel-tint: #e5f0ea;
+  color: var(--lb-panel-ink);
+  background: var(--lb-panel-bg);
+  border: 1px solid var(--lb-panel-border);
+  border-radius: 1rem;
+  container-type: inline-size;
+  font-family: Inter, system-ui, sans-serif;
+  max-inline-size: 62rem;
+  overflow-wrap: anywhere;
+}
+.lb-disclosure > summary {
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 1.25rem;
+  min-block-size: 44px;
+  padding: .65rem clamp(1rem, 4cqi, 2rem);
+  border-radius: inherit;
+  transition: background-color 180ms cubic-bezier(.2,.75,.2,1);
+}
+.lb-disclosure > summary::-webkit-details-marker { display: none; }
+.lb-disclosure > summary:hover { background: var(--lb-panel-tint); }
+.lb-disclosure > summary:focus-visible {
+  outline: 3px solid var(--lb-panel-accent);
+  outline-offset: 3px;
+}
+.lb-disclosure__title { font-size: clamp(1rem, 3cqi, 1.25rem); font-weight: 650; line-height: 1.4; }
+.lb-disclosure__chevron {
+  inline-size: .6rem;
+  block-size: .6rem;
+  flex: none;
+  border: solid var(--lb-panel-accent);
+  border-width: 0 .14rem .14rem 0;
+  transform: rotate(45deg);
+  transition: transform 180ms cubic-bezier(.2,.75,.2,1);
+}
+.lb-disclosure[open] .lb-disclosure__chevron { transform: rotate(225deg); }
+.lb-disclosure__body {
+  margin: 0 clamp(1rem, 4cqi, 2rem);
+  padding-block: 1rem 1.35rem;
+  border-block-start: 1px solid var(--lb-panel-border);
+  color: var(--lb-panel-muted);
+  line-height: 1.65;
+}
+.lb-disclosure__body:empty { display: none; }
+@media (prefers-color-scheme: dark) {
+  .lb-disclosure {
+    --lb-panel-ink: #eff6f3;
+    --lb-panel-muted: #c2d5ce;
+    --lb-panel-bg: #152625;
+    --lb-panel-border: #4a645c;
+    --lb-panel-accent: #a4dfc9;
+    --lb-panel-tint: #253b35;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lb-disclosure > summary, .lb-disclosure__chevron { transition: none; }
+}
+@media (forced-colors: active) {
+  .lb-disclosure__chevron { border-color: ButtonText; }
+}
