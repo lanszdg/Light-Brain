@@ -231,7 +231,7 @@ def create_app(home:Path,token:str):
 
     @app.post("/cases/{cid}/live",dependencies=owner)
     def launch_preview(cid:str,body:dict):
-        return previews.start(cid,body.get("ttl",600))
+        return previews.start(cid,body.get("ttl",600),body.get("archive_id"))
 
     @app.get("/cases/{cid}/live",dependencies=owner)
     def inspect_preview(cid:str):

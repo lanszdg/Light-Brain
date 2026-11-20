@@ -63,7 +63,7 @@ class LivePreviewTests(unittest.TestCase):
         receipt=run("verify_export",{**p,"archive":archive["archive"],"archive_sha256":aid})
         cls.store.finish(job["id"],job["attempt"],receipt,"test")
         cls.cid=case["id"]
-        cls.store.advance(cls.cid,c["revision"],"done","delivery",{"state":"delivered","delivery":{
+        cls.store.advance(cls.cid,c["revision"],"done","delivered",{"state":"delivered","delivery":{
             "candidate_sha":dev["candidate_sha"],"archive_id":aid,"export_job":job["id"],"entrypoint":rule["argv"]}})
 
     def tearDown(self):
@@ -105,3 +105,21 @@ class LivePreviewTests(unittest.TestCase):
         while self.manager.status(self.cid)["running"] and time.monotonic()<deadline:
             time.sleep(.1)
         self.assertFalse(self.manager.status(self.cid)["running"])
+
+    def test_an_accepted_archive_remains_runnable_during_an_iteration(self):
+        delivered=self.store.get_case(self.cid)
+        old=delivered["delivery"]
+        self.store.advance(self.cid,delivered["revision"],"change","owner:revise",
+                           {"state":"running","delivery":None,"criteria":None})
+        try:
+            with self.assertRaises(ValueError):
+                self.manager.start(self.cid)
+            with self.assertRaises(ValueError):
+                self.manager.start(self.cid,archive_id="0"*64)
+            info=self.manager.start(self.cid,ttl=3,archive_id=old["archive_id"])
+            self.assertTrue(info["running"])
+            self.assertEqual(info["candidate_sha"],old["candidate_sha"])
+        finally:
+            current=self.store.get_case(self.cid)
+            self.store.advance(self.cid,current["revision"],"restore","fixture",
+                {"state":"delivered","delivery":old,"criteria":delivered["criteria"]})

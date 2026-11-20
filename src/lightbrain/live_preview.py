@@ -328,12 +328,24 @@ class PreviewManager:
         self.sessions={}
         self.lock=threading.Lock()
 
-    def start(self, case_id, ttl=600):
+    def start(self, case_id, ttl=600, archive_id=None):
         if type(ttl) is not int or not 1<=ttl<=1800:
             raise ValueError("preview lifetime must be between 1 and 1800 seconds")
         with self.lock:
             case=self.store.get_case(case_id)
-            current=self.sessions.get(case_id)
+            key=case_id
+            if archive_id is not None:
+                if not isinstance(archive_id,str) or len(archive_id)!=64:
+                    raise ValueError("preview requires a valid archived release")
+                history=(row["body"].get("patch",{}).get("delivery") or {}
+                         for row in reversed(self.store.list_events(case_id)) if row["event_type"]=="delivered")
+                delivery=next((entry for entry in history if entry.get("archive_id")==archive_id and entry.get("export_job")),None)
+                if not delivery:
+                    raise ValueError("preview requires an accepted release in this case")
+                job=self.store.get_job(delivery["export_job"])
+                case={**case,"state":"delivered","delivery":delivery,"criteria":job["payload"]["criteria"]}
+                key=case_id+":"+archive_id
+            current=self.sessions.get(key)
             if current:
                 info=current.info()
                 if info["running"] and case.get("state")=="delivered" and info["candidate_sha"]==case["delivery"]["candidate_sha"]:
@@ -343,7 +355,7 @@ class PreviewManager:
             if len(self.sessions)>=8:
                 raise ValueError("eight live previews are already running")
             session=_Session(self.store,case,ttl)
-            self.sessions[case_id]=session
+            self.sessions[key]=session
             return session.info()
 
     def status(self, case_id):

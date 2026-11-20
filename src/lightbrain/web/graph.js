@@ -313,7 +313,8 @@ async function refresh(){
     const latest=head?.revision??result.revision;
     const revisions=result.revisions||Array.from({length:Math.min(120,latest)},(_,i)=>latest-i);
     active=rev ? undefined : result.active??head?.active;
-    const key=JSON.stringify([snapshot.case_id,snapshot.revision,revisions[0],active]);
+    const workbench=result.graph ? snapshot.nodes.map(node=>[node.id,node.ok,node.passed,node.label]) : [];
+    const key=JSON.stringify([snapshot.case_id,snapshot.revision,revisions[0],active,workbench]);
     if(key!==lastSignature){show(snapshot,revisions);lastSignature=key;}
     $("connection").lastChild.textContent=rev?"历史修订":"实时委托";
     message();
