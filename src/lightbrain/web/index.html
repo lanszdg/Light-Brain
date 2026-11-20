@@ -10,11 +10,11 @@
 <body>
 <main class="studio">
 <header class="masthead">
-  <div class="identity"><span class="sigil" aria-hidden="true">◈</span><span>LIGHT–BRAIN</span></div>
+  <div class="identity"><span class="sigil" aria-hidden="true">◈</span><span>LIGHT–BRAIN <small>STUDIO</small></span></div>
   <div class="live" id="connection"><span></span>示例图谱</div>
 </header>
 <section class="heading">
-  <div><p class="overline">决策与交付</p><h1>推演图谱</h1><p id="goal-copy" class="goal-copy">跟随一个想法，看到它怎样成为可验收的作品。</p></div>
+  <div><h1>推演图谱</h1><p id="goal-copy" class="goal-copy"></p></div>
   <details class="connect" id="connect">
     <summary>载入本地委托</summary>
     <form id="connect-form">
@@ -29,21 +29,31 @@
 <div class="workspace">
  <div class="board">
    <div class="toolbar">
-    <label>图谱修订 <select id="history" aria-label="图谱修订"></select></label>
-    <label>节点类型 <select id="filter" aria-label="节点类型"><option value="">全部</option></select></label>
-    <button id="reset" title="复位图谱">复位视图</button>
+    <div class="mode" role="group" aria-label="布局"><button id="topology" aria-pressed="true">拓扑</button><button id="layers" aria-pressed="false">分层</button></div>
+    <label>节点 <select id="filter" aria-label="节点类型"><option value="">全部</option></select></label>
+    <button class="tool" id="isolate" aria-pressed="false">聚焦路径</button>
+    <button class="tool" id="reset" title="复位图谱">适应视图</button>
    </div>
    <div id="viewport" aria-label="推演图谱，可拖动平移，使用控制按钮缩放">
      <div id="plane"><canvas id="links" aria-hidden="true"></canvas><div id="nodes"></div></div>
-     <div class="zoom"><button id="zoom-in" aria-label="放大">+</button><button id="zoom-out" aria-label="缩小">−</button></div>
+     <div class="map"><canvas id="minimap" width="145" height="84" aria-hidden="true"></canvas></div>
+     <div class="zoom"><button id="zoom-out" aria-label="缩小">−</button><output id="zoom-value" aria-label="缩放比例">100%</output><button id="zoom-in" aria-label="放大">+</button></div>
    </div>
    <div id="legend" class="legend"></div>
+   <footer class="timeline">
+    <div class="revisions"><label for="history">修订记录</label><select id="history" aria-label="图谱修订"></select></div>
+    <div class="timeline-range"><input id="scrub" type="range" min="0" max="0" aria-label="回溯图谱修订"><output id="timeline-bounds" aria-hidden="true"></output></div>
+    <button class="tool" id="latest">回到最新</button>
+   </footer>
  </div>
  <aside class="inspector" aria-labelledby="detail-title">
-   <p class="overline" id="detail-type">目标</p>
-   <h2 id="detail-title">选择节点</h2>
-   <p id="detail-copy"></p>
-   <dl id="detail-meta"></dl>
+   <div class="inspector-head"><span>检查器</span><span id="graph-count"></span></div>
+   <div class="detail">
+     <p class="overline" id="detail-type">目标</p>
+     <h2 id="detail-title">选择节点</h2>
+     <p id="detail-copy"></p>
+     <dl id="detail-meta"></dl>
+   </div>
    <div id="neighbors"></div>
  </aside>
 </div>
